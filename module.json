@@ -8,10 +8,10 @@
     "Daimakaicho#5991"
   ],
   "esmodules": [
-    "./module/src/better-entity-link.js"
+    "module/src/better-entity-link.js"
   ],
   "styles": [
-    "./module/styles/better-entity-link.css"
+    "module/styles/better-entity-link.css"
   ],
   "url": "https://github.com/Daimakaicho/better-entity-link",
   "manifest": "https://github.com/Daimakaicho/better-entity-link/releases/latest/download/module.json",
