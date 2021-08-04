@@ -33,6 +33,41 @@ Hooks.on('ready', () => {
         callback: async entity => entity.sheet.render(true)
     });
 
+    // Actor - "View Character Artwork" button
+    BetterEntityLink.registerActorAction({
+        name: "SIDEBAR.CharArt",
+        icon: "fa-image",
+        condition: async entity => {
+            return entity?.data.img !== CONST.DEFAULT_TOKEN;
+        },
+        callback: async entity => {
+            const imagePoput = new ImagePopout(entity?.data.img, {
+                title: entity.name,
+                shareable: true,
+                uuid: entity.uuid
+            });
+            imagePoput.render(true);
+        }
+    });
+
+    // Actor - "View Token Artwork" button
+    BetterEntityLink.registerActorAction({
+        name: "SIDEBAR.TokenArt",
+        icon: "fa-image",
+        condition: async entity => {
+            if (entity?.data.token?.randomImg) return false;
+            return ![undefined, null, CONST.DEFAULT_TOKEN].includes(entity?.data.token.img);
+        },
+        callback: async entity => {
+            const imagePoput = new ImagePopout(entity?.data.token.img, {
+                title: entity.name,
+                shareable: true,
+                uuid: entity.uuid
+            });
+            imagePoput.render(true);
+        }
+    });
+
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderItemSheet', BetterEntityLink.enhanceEntityLinks);
