@@ -1,4 +1,4 @@
-import { BetterEntityLink } from "./BetterEntityLink.js";
+import {BetterEntityLink} from "./BetterEntityLink.js";
 
 Hooks.on('ready', () => {
 

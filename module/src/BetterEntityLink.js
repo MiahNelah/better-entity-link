@@ -123,8 +123,8 @@ export class BetterEntityLink {
     }
 
     _resolveEntityType(entityLink) {
-        if (entityLink.data("entity")) return entityLink.data("entity");
-        if (entityLink.data("pack")) {
+        if (entityLink[0].hasAttribute("data-entity")) return entityLink.data("entity");
+        if (entityLink[0].hasAttribute("data-pack")) {
             const packId = entityLink.data("pack");
             return game.packs.get(packId).documentName;
         }
