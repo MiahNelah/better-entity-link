@@ -32,7 +32,6 @@ Hooks.on('ready', () => {
     Hooks.on('renderChatMessage', BetterEntityLink.enhanceEntityLinks);
 })
 
-
 /*
 Hooks.on('renderApplication', enhanceEntityLink);
 Hooks.on('renderDocumentSheet', enhanceEntityLink);

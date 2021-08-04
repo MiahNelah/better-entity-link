@@ -68,6 +68,13 @@ export class BetterEntityLink {
         module.registerAction =  instance.registerAction;
         module.enhanceEntityLink = instance.registerAction;
         module.enhanceEntityLinks = instance.enhanceEntityLinks;
+
+        module.registerActorAction = BetterEntityLink.registerActorAction;
+        module.registerItemAction = BetterEntityLink.registerItemAction;
+        module.registerSceneAction = BetterEntityLink.registerSceneAction;
+        module.registerJournalEntryAction = BetterEntityLink.registerJournalEntryAction;
+        module.registerMacroAction = BetterEntityLink.registerMacroAction;
+        module.registerRolltableAction = BetterEntityLink.registerRolltableAction;
     }
 
     constructor() {
