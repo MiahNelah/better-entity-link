@@ -85,7 +85,10 @@ export class BetterEntityLink {
         const actionMenu = {
             name: options.name,
             icon: `<i class="fas ${options.icon}"></i>`,
-            condition: async li => this._isValidEntityType(li, entityType) && (options.condition(li) || true),
+            condition: async li => {
+                const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
+                return entityType.localeCompare(entity.documentName, undefined, {sensitivity: "base"}) && (options.condition(entity) || true);
+            },
             callback: async li => {
                 const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
                 return await options.callback(entity);
@@ -112,10 +115,6 @@ export class BetterEntityLink {
                 this.enhanceEntityLink($(link));
             }
         }, 100);
-    }
-
-    _isValidEntityType(entityLink, type) {
-        return type.localeCompare(this._resolveEntityType(entityLink), undefined, {sensitivity: "base"});
     }
 
     async _resolveEntity(type, id, packId) {
