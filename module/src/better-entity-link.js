@@ -83,6 +83,40 @@ Hooks.on('ready', () => {
         }
     });
 
+    // JournalEntry - "Show players (Text)" button
+    BetterEntityLink.registerJournalEntryAction({
+        name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
+        icon: "fa-eye",
+        condition: async entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        callback: async entity => {
+            await game.socket.emit("showEntry", entity.uuid, "text", true, entry => {
+                Journal._showEntry(entity.uuid, "text", true);
+                ui.notifications.info(game.i18n.format("JOURNAL.ActionShowSuccess", {
+                    mode: "text",
+                    title: entity.name,
+                    which: "all"
+                }));
+            });
+        }
+    });
+
+    // JournalEntry - "Show players (Image)" button
+    BetterEntityLink.registerJournalEntryAction({
+        name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeImage")})`,
+        icon: "fa-eye",
+        condition: async entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        callback: async entity => {
+            await game.socket.emit("showEntry", entity.uuid, "image", true, entry => {
+                Journal._showEntry(entity.uuid, "image", true);
+                ui.notifications.info(game.i18n.format("JOURNAL.ActionShowSuccess", {
+                    mode: "image",
+                    title: entity.name,
+                    which: "all"
+                }));
+            });
+        }
+    });
+
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderItemSheet', BetterEntityLink.enhanceEntityLinks);
