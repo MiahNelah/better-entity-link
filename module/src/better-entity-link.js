@@ -5,16 +5,16 @@ Hooks.on('ready', () => {
     // Scene - "View" button
     BetterEntityLink.registerSceneAction({
         name: "SCENES.View",
-        icon: "fa-eye fa-fw",
-        condition: async li => game.user.isGM,
+        icon: "fa-eye",
+        condition: async entity => game.user.isGM,
         callback: async entity => await entity.view()
     });
 
     // Scene - "Activate" button
     BetterEntityLink.registerSceneAction({
         name: "SCENES.Activate",
-        icon: "fa-bullseye fa-fw",
-        condition: async li => game.user.isGM,
+        icon: "fa-bullseye",
+        condition: async entity => game.user.isGM,
         callback: async entity => await entity.activate()
     });
 
@@ -22,14 +22,14 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerRolltableAction({
         name: "TABLE.Roll",
         icon: "fa-dice-d20",
-        condition: async li => game.user.isGM,
+        condition: async entity => game.user.isGM,
         callback: async entity => await entity.draw()
     });
 
     // Macro - "Edit Macro" button
     BetterEntityLink.registerMacroAction({
         name: "MACRO.Edit",
-        icon: "fa-edit fa-fw",
+        icon: "fa-edit",
         callback: async entity => entity.sheet.render(true)
     });
 
