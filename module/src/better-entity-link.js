@@ -18,12 +18,19 @@ Hooks.on('ready', () => {
         callback: async entity => await entity.activate()
     });
 
-    // Scene - "Roll" button
+    // RollTable - "Roll" button
     BetterEntityLink.registerRolltableAction({
         name: "TABLE.Roll",
         icon: "fa-dice-d20",
         condition: async li => game.user.isGM,
         callback: async entity => await entity.draw()
+    });
+
+    // Macro - "Edit Macro" button
+    BetterEntityLink.registerMacroAction({
+        name: "MACRO.Edit",
+        icon: "fa-edit fa-fw",
+        callback: async entity => entity.sheet.render(true)
     });
 
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
