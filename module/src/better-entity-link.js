@@ -68,6 +68,21 @@ Hooks.on('ready', () => {
         }
     });
 
+    // Item - "View Item Artwork" button
+    BetterEntityLink.registerItemAction({
+        name: "ITEM.ViewArt",
+        icon: "fa-image",
+        condition: async entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        callback: async entity => {
+            const imagePoput = new ImagePopout(entity?.data.img, {
+                title: entity.name,
+                shareable: true,
+                uuid: entity.uuid
+            });
+            imagePoput.render(true);
+        }
+    });
+
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderItemSheet', BetterEntityLink.enhanceEntityLinks);
