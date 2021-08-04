@@ -4,6 +4,10 @@ Improve your productivity with contextmenus on entity links!
 
 🚀 No configuration
 
+🗺️ Work with all windows
+
+💬 Work with all languages
+
 ❤️ Work with all systems
 
 🤝 Extensible with other modules
