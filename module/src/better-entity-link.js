@@ -7,7 +7,10 @@ Hooks.on('ready', () => {
         name: "SCENES.View",
         icon: "fa-eye",
         condition: async entity => game.user.isGM,
-        callback: async entity => await entity.view()
+        callback: async entity => {
+            if (!game.user.isGM) return
+            await entity.view()
+        }
     });
 
     // Scene - "Activate" button
@@ -15,7 +18,10 @@ Hooks.on('ready', () => {
         name: "SCENES.Activate",
         icon: "fa-bullseye",
         condition: async entity => game.user.isGM,
-        callback: async entity => await entity.activate()
+        callback: async entity => {
+            if (!game.user.isGM) return
+            await entity.activate()
+        }
     });
 
     // RollTable - "Roll" button
