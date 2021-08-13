@@ -118,8 +118,15 @@ export class BetterEntityLink {
         }, 100);
     }
 
-    async _resolveEntity(type, id, packId) {
-        return packId ? await game.packs.get(packId)?.getDocument(id) : game.collections.get(type)?.get(id);
+    _resolveEntity(type, id, packId) {
+        // This method must not be async (because of foundry behavior in ContextMenu render method),
+        // so we do not use await game.packs(packId)?.getDocument(id)
+        const entity = game.collections.get(type)?.get(id);
+        if (entity) return entity;
+        if (packId) {
+            return game.packs.get(packId)?.contents.find(entity => entity.id === id);
+        }
+        return undefined;
     }
 
     _resolveEntityType(entityLink) {
