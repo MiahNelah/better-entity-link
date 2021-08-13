@@ -6,7 +6,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerSceneAction({
         name: "SCENES.View",
         icon: "fa-eye",
-        condition: async entity => game.user.isGM,
+        condition: entity => game.user.isGM,
         callback: async entity => {
             if (!game.user.isGM) return
             await entity.view()
@@ -17,7 +17,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerSceneAction({
         name: "SCENES.Activate",
         icon: "fa-bullseye",
-        condition: async entity => game.user.isGM,
+        condition: entity => game.user.isGM,
         callback: async entity => {
             if (!game.user.isGM) return
             await entity.activate()
@@ -28,7 +28,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerRolltableAction({
         name: "TABLE.Roll",
         icon: "fa-dice-d20",
-        condition: async entity => game.user.isGM,
+        condition: entity => game.user.isGM,
         callback: async entity => await entity.draw()
     });
 
@@ -43,7 +43,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerActorAction({
         name: "SIDEBAR.CharArt",
         icon: "fa-image",
-        condition: async entity => {
+        condition: entity => {
             return entity?.data.img !== CONST.DEFAULT_TOKEN;
         },
         callback: async entity => {
@@ -60,7 +60,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerActorAction({
         name: "SIDEBAR.TokenArt",
         icon: "fa-image",
-        condition: async entity => {
+        condition: entity => {
             if (entity?.data.token?.randomImg) return false;
             return ![undefined, null, CONST.DEFAULT_TOKEN].includes(entity?.data.token.img);
         },
@@ -78,7 +78,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerItemAction({
         name: "ITEM.ViewArt",
         icon: "fa-image",
-        condition: async entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
         callback: async entity => {
             const imagePoput = new ImagePopout(entity?.data.img, {
                 title: entity.name,
@@ -93,7 +93,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
         icon: "fa-eye",
-        condition: async entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
         callback: async entity => {
             await game.socket.emit("showEntry", entity.uuid, "text", true, entry => {
                 Journal._showEntry(entity.uuid, "text", true);
@@ -110,7 +110,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeImage")})`,
         icon: "fa-eye",
-        condition: async entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
         callback: async entity => {
             await game.socket.emit("showEntry", entity.uuid, "image", true, entry => {
                 Journal._showEntry(entity.uuid, "image", true);
