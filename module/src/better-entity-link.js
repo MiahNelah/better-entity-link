@@ -8,7 +8,7 @@ Hooks.on('ready', () => {
         icon: "fa-eye",
         condition: entity => game.user.isGM,
         callback: async entity => {
-            if (!game.user.isGM) return
+            if (entity.active || !game.user.isGM) return
             await entity.view()
         }
     });
@@ -19,7 +19,7 @@ Hooks.on('ready', () => {
         icon: "fa-bullseye",
         condition: entity => game.user.isGM,
         callback: async entity => {
-            if (!game.user.isGM) return
+            if (entity.active || !game.user.isGM) return
             await entity.activate()
         }
     });
