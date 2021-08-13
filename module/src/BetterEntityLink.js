@@ -86,9 +86,9 @@ export class BetterEntityLink {
             name: options.name,
             icon: `<i class="fas ${options.icon}"></i>`,
             condition: li => {
-                const entity = Promise.resolve(this._resolveEntity(entityType, li.data("id"), li.data("pack")));
-                return entityType.localeCompare(entity.documentName, undefined, {sensitivity: "base"})
-                    && (options.condition(entity) || true);
+                const entity = this._resolveEntity(entityType, li.data("id"), li.data("pack"));
+                return entityType.localeCompare(entity.documentName, undefined, {sensitivity: "base"}) === 0
+                        && (options.condition instanceof Function && options.condition(entity));
             },
             callback: async li => {
                 const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
