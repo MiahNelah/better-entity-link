@@ -28,7 +28,8 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerRolltableAction({
         name: "TABLE.Roll",
         icon: "fa-dice-d20",
-        condition: entity => game.user.isGM,
+        condition: entity => game.user.isGM || game.user.isTrusted
+            || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission),
         callback: async entity => await entity.draw()
     });
 
@@ -36,6 +37,8 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerMacroAction({
         name: "MACRO.Edit",
         icon: "fa-edit",
+        condition: entity => game.user.isGM || game.user.isTrusted
+            || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission),
         callback: async entity => entity.sheet.render(true)
     });
 
@@ -44,7 +47,9 @@ Hooks.on('ready', () => {
         name: "SIDEBAR.CharArt",
         icon: "fa-image",
         condition: entity => {
-            return entity?.data.img !== CONST.DEFAULT_TOKEN;
+            return entity?.data.img !== CONST.DEFAULT_TOKEN
+                && (game.user.isGM || game.user.isTrusted
+                    || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission));
         },
         callback: async entity => {
             const imagePoput = new ImagePopout(entity?.data.img, {
@@ -62,7 +67,9 @@ Hooks.on('ready', () => {
         icon: "fa-image",
         condition: entity => {
             if (entity?.data.token?.randomImg) return false;
-            return ![undefined, null, CONST.DEFAULT_TOKEN].includes(entity?.data.token.img);
+            return ![undefined, null, CONST.DEFAULT_TOKEN].includes(entity?.data.token.img)
+                && (game.user.isGM || game.user.isTrusted
+                    || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission))
         },
         callback: async entity => {
             const imagePoput = new ImagePopout(entity?.data.token.img, {
@@ -78,7 +85,9 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerItemAction({
         name: "ITEM.ViewArt",
         icon: "fa-image",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN
+            && (game.user.isGM || game.user.isTrusted
+                || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission)),
         callback: async entity => {
             const imagePoput = new ImagePopout(entity?.data.img, {
                 title: entity.name,
@@ -93,7 +102,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
         icon: "fa-eye",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async entity => {
             await game.socket.emit("showEntry", entity.uuid, "text", true, entry => {
                 Journal._showEntry(entity.uuid, "text", true);
@@ -110,7 +119,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeImage")})`,
         icon: "fa-eye",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN,
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async entity => {
             await game.socket.emit("showEntry", entity.uuid, "image", true, entry => {
                 Journal._showEntry(entity.uuid, "image", true);
