@@ -3,7 +3,7 @@
   "title": "Better Entity Link",
   "description": "Improve your productivity with contextmenus on entity links!",
   "version": "0.0.1",
-  "minimumCoreVersion": "0.8.8",
+  "minimumCoreVersion": "0.8.9",
   "authors": [
     "Daimakaicho#5991"
   ],
