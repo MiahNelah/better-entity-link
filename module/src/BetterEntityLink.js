@@ -48,6 +48,10 @@ export class BetterEntityLink {
         return BetterEntityLink.registerAction("RollTable", options);
     }
 
+    static registerCardStacksAction(options) {
+        return BetterEntityLink.registerAction("Cards", options);
+    }
+
     static _defaultContextMenu() {
         return {
             "Actor": [],
@@ -55,7 +59,8 @@ export class BetterEntityLink {
             "Scene": [],
             "JournalEntry": [],
             "Macro": [],
-            "RollTable": []
+            "RollTable": [],
+            "Cards": []
         };
     }
 
@@ -75,6 +80,7 @@ export class BetterEntityLink {
         module.registerJournalEntryAction = BetterEntityLink.registerJournalEntryAction;
         module.registerMacroAction = BetterEntityLink.registerMacroAction;
         module.registerRolltableAction = BetterEntityLink.registerRolltableAction;
+        module.registerCardStacksAction = BetterEntityLink.registerCardStacksAction;
     }
 
     constructor() {
