@@ -2,7 +2,7 @@
   "name": "better-entity-link",
   "title": "Better Entity Link",
   "description": "Improve your productivity with contextmenus on entity links!",
-  "version": "1.3",
+  "version": "1.1",
   "minimumCoreVersion": "9",
   "compatibleCoreVersion": "9",
   "authors": [
@@ -16,5 +16,5 @@
   ],
   "url": "https://github.com/Daimakaicho/better-entity-link",
   "manifest": "https://github.com/Daimakaicho/better-entity-link/releases/latest/download/module.json",
-  "download": "https://github.com/Daimakaicho/better-entity-link/releases/download/v1.3/module.zip"
+  "download": "https://github.com/Daimakaicho/better-entity-link/releases/download/v1.1/module.zip"
 }
