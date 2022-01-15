@@ -12,7 +12,7 @@ Improve your productivity with contextmenus on entity links!
 
 🤝 Extensible with other modules
 
-Minimum Core Version: 0.8.8 (but should work with older ones too)
+Minimum Core Version: v9
 
 # Demo
 
