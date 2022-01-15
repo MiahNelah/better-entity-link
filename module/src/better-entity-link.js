@@ -132,6 +132,47 @@ Hooks.on('ready', () => {
         }
     });
 
+    // Cardstacks - "Shuffle" button
+    BetterEntityLink.registerCardStacksAction({
+        name: "CARDS.Shuffle",
+        icon: "fa-random",
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("hand", undefined, {sensitivity: "base"}) !== 0,
+        callback: async entity => await entity.shuffle()        
+    });
+
+    // Cardstacks - "Draw" button
+    BetterEntityLink.registerCardStacksAction({
+        name: "CARDS.Draw",
+        icon: "fa-edit",
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("hand", undefined, {sensitivity: "base"}) === 0,
+        callback: async entity => await entity.drawDialog()        
+    });
+
+    // Cardstacks - "Deal" button
+    BetterEntityLink.registerCardStacksAction({
+        name: "CARDS.Deal",
+        icon: "fa-share-square",
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("deck", undefined, {sensitivity: "base"}) === 0,
+        callback: async entity => await entity.dealDialog()   
+    });
+
+    // Cardstacks - "Pass" button
+    BetterEntityLink.registerCardStacksAction({
+        name: "CARDS.Pass",
+        icon: "fa-share-square",
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("deck", undefined, {sensitivity: "base"}) !== 0,
+        callback: async entity => await entity.passDialog()   
+    });
+
+    // Cardstacks - "Reset" button
+    BetterEntityLink.registerCardStacksAction({
+        name: "CARDS.Reset",
+        icon: "fa-undo",
+        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => await entity.resetDialog()        
+    });
+
+
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderItemSheet', BetterEntityLink.enhanceEntityLinks);
