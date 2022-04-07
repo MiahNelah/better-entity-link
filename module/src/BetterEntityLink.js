@@ -68,8 +68,7 @@ export class BetterEntityLink {
         if (BetterEntityLink.instance() !== undefined) return;
 
         const module = game.modules.get(BetterEntityLink.id);
-        const instance = new BetterEntityLink();
-        module._instance = instance;
+        const instance = new BetterEntityLink(module);
         module.registerAction =  instance.registerAction;
         module.enhanceEntityLink = instance.registerAction;
         module.enhanceEntityLinks = instance.enhanceEntityLinks;
@@ -83,16 +82,17 @@ export class BetterEntityLink {
         module.registerCardStacksAction = BetterEntityLink.registerCardStacksAction;
     }
 
-    constructor() {
+    constructor(module) {
         this.contextMenus = duplicate(BetterEntityLink._defaultContextMenu());
+        module._instance = this;
     }
 
     registerAction(entityType, options) {
         const actionMenu = {
             name: options.name,
             icon: `<i class="fas ${options.icon}"></i>`,
-            condition: li => {
-                const entity = this._resolveEntity(entityType, li.data("id"), li.data("pack"));
+            condition: async li => {
+                const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
                 return entityType.localeCompare(entity.documentName, undefined, {sensitivity: "base"}) === 0
                         && (options.condition instanceof Function && options.condition(entity));
             },
@@ -124,15 +124,11 @@ export class BetterEntityLink {
         }, 100);
     }
 
-    _resolveEntity(type, id, packId) {
-        // This method must not be async (because of foundry behavior in ContextMenu render method),
-        // so we do not use await game.packs(packId)?.getDocument(id)
-        const entity = game.collections.get(type)?.get(id);
-        if (entity) return entity;
-        if (packId) {
-            return game.packs.get(packId)?.contents.find(entity => entity.id === id);
+    async _resolveEntity(type, id, packId) {
+        if (packId) {            
+            return await game.packs.get(packId)?.getDocument(id);
         }
-        return undefined;
+        return game.collections.get(type)?.get(id);
     }
 
     _resolveEntityType(entityLink) {
