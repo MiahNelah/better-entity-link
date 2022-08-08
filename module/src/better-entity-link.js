@@ -47,12 +47,12 @@ Hooks.on('ready', () => {
         name: "SIDEBAR.CharArt",
         icon: "fa-image",
         condition: entity => {
-            return entity?.data.img !== CONST.DEFAULT_TOKEN
+            return entity?.img !== CONST.DEFAULT_TOKEN
                 && (game.user.isGM || game.user.isTrusted
                     || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission));
         },
         callback: async entity => {
-            const imagePoput = new ImagePopout(entity?.data.img, {
+            const imagePoput = new ImagePopout(entity?.img, {
                 title: entity.name,
                 shareable: true,
                 uuid: entity.uuid
@@ -66,13 +66,13 @@ Hooks.on('ready', () => {
         name: "SIDEBAR.TokenArt",
         icon: "fa-image",
         condition: entity => {
-            if (entity?.data.token?.randomImg) return false;
-            return ![undefined, null, CONST.DEFAULT_TOKEN].includes(entity?.data.token.img)
+            if (entity?.prototypeToken?.texture?.src) return false;
+            return ![undefined, null, CONST.DEFAULT_TOKEN].includes(entity?.prototypeToken.texture.src)
                 && (game.user.isGM || game.user.isTrusted
                     || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission))
         },
         callback: async entity => {
-            const imagePoput = new ImagePopout(entity?.data.token.img, {
+            const imagePoput = new ImagePopout(entity?.prototypeToken.texture.src, {
                 title: entity.name,
                 shareable: true,
                 uuid: entity.uuid
@@ -85,11 +85,11 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerItemAction({
         name: "ITEM.ViewArt",
         icon: "fa-image",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN
             && (game.user.isGM || game.user.isTrusted
                 || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission)),
         callback: async entity => {
-            const imagePoput = new ImagePopout(entity?.data.img, {
+            const imagePoput = new ImagePopout(entity?.img, {
                 title: entity.name,
                 shareable: true,
                 uuid: entity.uuid
@@ -102,7 +102,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
         icon: "fa-eye",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async entity => {
             await game.socket.emit("showEntry", entity.uuid, "text", true, entry => {
                 Journal._showEntry(entity.uuid, "text", true);
@@ -119,7 +119,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeImage")})`,
         icon: "fa-eye",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async entity => {
             await game.socket.emit("showEntry", entity.uuid, "image", true, entry => {
                 Journal._showEntry(entity.uuid, "image", true);
@@ -136,7 +136,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
         icon: "fa-random",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("hand", undefined, {sensitivity: "base"}) !== 0,
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("hand", undefined, {sensitivity: "base"}) !== 0,
         callback: async entity => await entity.shuffle()        
     });
 
@@ -144,7 +144,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Draw",
         icon: "fa-edit",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("hand", undefined, {sensitivity: "base"}) === 0,
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("hand", undefined, {sensitivity: "base"}) === 0,
         callback: async entity => await entity.drawDialog()        
     });
 
@@ -152,7 +152,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Deal",
         icon: "fa-share-square",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("deck", undefined, {sensitivity: "base"}) === 0,
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("deck", undefined, {sensitivity: "base"}) === 0,
         callback: async entity => await entity.dealDialog()   
     });
 
@@ -160,7 +160,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Pass",
         icon: "fa-share-square",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("deck", undefined, {sensitivity: "base"}) !== 0,
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) &&  entity.type.localeCompare("deck", undefined, {sensitivity: "base"}) !== 0,
         callback: async entity => await entity.passDialog()   
     });
 
@@ -168,13 +168,13 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Reset",
         icon: "fa-undo",
-        condition: entity => entity?.data.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async entity => await entity.resetDialog()        
     });
 
 
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
-    Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
+    Hooks.on('renderJournalPageSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderItemSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderChatMessage', BetterEntityLink.enhanceEntityLinks);
 })
