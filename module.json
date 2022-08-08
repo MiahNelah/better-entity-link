@@ -1,12 +1,18 @@
 {
-  "name": "better-entity-link",
+  "id": "better-entity-link",
   "title": "Better Entity Link",
   "description": "Improve your productivity with contextmenus on entity links!",
-  "version": "0.0.1",
-  "minimumCoreVersion": "9",
-  "compatibleCoreVersion": "9",
+  "version": "0.0.1",  
+  "minimumCoreVersion": "10",  
+  "compatibility": {
+    "minimum": 10,
+    "verfied": "10.276"
+  },
   "authors": [
-    "Miah Nelah#5991"
+    {
+      "name": "Miah Nelah",
+      "discord": "Miah Nelah#5991"
+    }
   ],
   "esmodules": [
     "module/src/better-entity-link.js"
