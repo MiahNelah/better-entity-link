@@ -52,6 +52,10 @@ export class BetterEntityLink {
         return BetterEntityLink.registerAction("Cards", options);
     }
 
+    static registerPlaylistAction(options) {
+        return BetterEntityLink.registerAction("Playlist", options);
+    }
+
     static _defaultContextMenu() {
         return {
             "Actor": [],
@@ -60,7 +64,8 @@ export class BetterEntityLink {
             "JournalEntry": [],
             "Macro": [],
             "RollTable": [],
-            "Cards": []
+            "Cards": [],
+            "Playlist": []
         };
     }
 
@@ -80,6 +85,7 @@ export class BetterEntityLink {
         module.registerMacroAction = BetterEntityLink.registerMacroAction;
         module.registerRolltableAction = BetterEntityLink.registerRolltableAction;
         module.registerCardStacksAction = BetterEntityLink.registerCardStacksAction;
+        module.registerPlaylistAction = BetterEntityLink.registerPlaylistAction;
     }
 
     constructor(module) {
@@ -107,14 +113,14 @@ export class BetterEntityLink {
     enhanceEntityLink(link) {
         const entityType = this._resolveEntityType($(link));
         const contextOptions = this.contextMenus[entityType];
-        if (!contextOptions.length) return undefined;
+        if (!contextOptions?.length) return undefined;
         new ContextMenu($(link), undefined, contextOptions, BetterEntityLink._contextMenuName);
     }
 
     enhanceEntityLinks(app, html, data) {
         if (html === null || html === undefined) return undefined;
 
-        const links = html.find("a.entity-link:not([data-contextmenu])");
+        const links = html.find("a.content-link:not([data-contextmenu])");
         if (links === null || links === undefined || (Array.isArray(links) && !links.length)) return undefined;
 
         setTimeout(() => {
@@ -132,7 +138,7 @@ export class BetterEntityLink {
     }
 
     _resolveEntityType(entityLink) {
-        if (entityLink[0].hasAttribute("data-entity")) return entityLink.data("entity");
+        if (entityLink[0].hasAttribute("data-type")) return entityLink.data("type");
         if (entityLink[0].hasAttribute("data-pack")) {
             const packId = entityLink.data("pack");
             return game.packs.get(packId).documentName;
