@@ -5,8 +5,8 @@
   "version": "0.0.1",  
   "minimumCoreVersion": "10",  
   "compatibility": {
-    "minimum": 10,
-    "verfied": "10.276"
+    "minimum": "10",
+    "verfied": "10.283"
   },
   "authors": [
     {
