@@ -132,6 +132,74 @@ Hooks.on('ready', () => {
         }
     });
 
+    // JournalEntry - "View Scene" button
+    BetterEntityLink.registerJournalEntryAction({
+        name: "SCENES.View",
+        icon: "fa-bullseye",
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => {
+            let scenes = Array.from(game.scenes)
+            for (let i=0; i<scenes.length; i++){
+                if (scenes[i]._source.journal == entity._id || scenes[i]._source.journalEntryPage == entity._id){
+                    scenes[i].view();
+                }
+            }
+
+            
+        }
+    });
+
+    // JournalEntry - "Activate Scene" button
+    BetterEntityLink.registerJournalEntryAction({
+        name: "SCENES.Activate",
+        icon: "fa-bullseye",
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => {
+            let scenes = Array.from(game.scenes)
+            for (let i=0; i<scenes.length; i++){
+                if (scenes[i]._source.journal == entity._id || scenes[i]._source.journalEntryPage == entity._id){
+                    scenes[i].activate();
+                }
+            }
+
+            
+        }
+    });
+
+    // JournalEntryPage - "View Scene" button
+    BetterEntityLink.registerJournalEntryPageAction({
+        name: "SCENES.View",
+        icon: "fa-bullseye",
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => {
+            let scenes = Array.from(game.scenes)
+            for (let i=0; i<scenes.length; i++){
+                if (scenes[i]._source.journal == entity._id || scenes[i]._source.journalEntryPage == entity._id){
+                    scenes[i].view();
+                }
+            }
+
+            
+        }
+    });
+
+    // JournalEntryPage - "Activate Scene" button
+    BetterEntityLink.registerJournalEntryPageAction({
+        name: "SCENES.Activate",
+        icon: "fa-bullseye",
+        condition: entity => entity?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => {
+            let scenes = Array.from(game.scenes)
+            for (let i=0; i<scenes.length; i++){
+                if (scenes[i]._source.journal == entity._id || scenes[i]._source.journalEntryPage == entity._id){
+                    scenes[i].activate();
+                }
+            }
+
+            
+        }
+    });
+
     // Cardstacks - "Shuffle" button
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",

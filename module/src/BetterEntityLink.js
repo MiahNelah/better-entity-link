@@ -40,6 +40,10 @@ export class BetterEntityLink {
         return BetterEntityLink.registerAction("JournalEntry", options);
     }
 
+    static registerJournalEntryPageAction(options) {
+        return BetterEntityLink.registerAction("JournalEntryPage", options);
+    }
+
     static registerMacroAction(options) {
         return BetterEntityLink.registerAction("Macro", options);
     }
@@ -62,6 +66,7 @@ export class BetterEntityLink {
             "Item": [],
             "Scene": [],
             "JournalEntry": [],
+            "JournalEntryPage": [],
             "Macro": [],
             "RollTable": [],
             "Cards": [],
@@ -82,6 +87,7 @@ export class BetterEntityLink {
         module.registerItemAction = BetterEntityLink.registerItemAction;
         module.registerSceneAction = BetterEntityLink.registerSceneAction;
         module.registerJournalEntryAction = BetterEntityLink.registerJournalEntryAction;
+        module.registerJournalEntryPageAction = BetterEntityLink.registerJournalEntryPageAction;
         module.registerMacroAction = BetterEntityLink.registerMacroAction;
         module.registerRolltableAction = BetterEntityLink.registerRolltableAction;
         module.registerCardStacksAction = BetterEntityLink.registerCardStacksAction;
@@ -133,6 +139,17 @@ export class BetterEntityLink {
     async _resolveEntity(type, id, packId) {
         if (packId) {            
             return await game.packs.get(packId)?.getDocument(id);
+        }
+        if (type == "JournalEntryPage") {
+            let journals = Array.from(game.journal)
+            for (let i=0; i<journals.length; i++){
+                let pages = Array.from(journals[i].pages)
+                for (let j=0; j<pages.length; j++){
+                    if (pages[j]._id == id){
+                        return pages[j];
+                    }
+                }
+            }
         }
         return game.collections.get(type)?.get(id);
     }
