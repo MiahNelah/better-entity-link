@@ -104,12 +104,12 @@ export class BetterEntityLink {
             name: options.name,
             icon: `<i class="fas ${options.icon}"></i>`,
             condition: async li => {
-                const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
+                const entity = await this._resolveEntity(entityType, li.data("uuid"), li.data("pack"));
                 return entityType.localeCompare(entity.documentName, undefined, {sensitivity: "base"}) === 0
                         && (options.condition instanceof Function && options.condition(entity));
             },
             callback: async li => {
-                const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
+                const entity = await this._resolveEntity(entityType, li.data("uuid"), li.data("pack"));
                 return await options.callback(entity);
             }
         }
@@ -136,7 +136,10 @@ export class BetterEntityLink {
         }, 100);
     }
 
-    async _resolveEntity(type, id, packId) {
+    async _resolveEntity(type, uuid, packId) {
+        let id_arr = uuid.split(".")
+        let id = id_arr[id_arr.length -1]
+
         if (packId) {            
             return await game.packs.get(packId)?.getDocument(id);
         }
