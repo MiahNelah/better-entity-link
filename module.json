@@ -3,10 +3,9 @@
   "title": "Better Entity Link",
   "description": "Improve your productivity with contextmenus on entity links!",
   "version": "0.0.1",  
-  "minimumCoreVersion": "10",  
   "compatibility": {
-    "minimum": "10",
-    "verified": "10.283"
+    "minimum": "11",
+    "verified": "11.295"
   },
   "authors": [
     {
