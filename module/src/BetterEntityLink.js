@@ -110,11 +110,11 @@ export class BetterEntityLink {
         this.contextMenus[entityType].push(actionMenu);
     }
 
-    enhanceEntityLink(link) {
+    enhanceEntityLink(app, link) {
         const entityType = this._resolveEntityType($(link));
         const contextOptions = this.contextMenus[entityType];
         if (!contextOptions?.length) return undefined;
-        new ContextMenu($(link), undefined, contextOptions, BetterEntityLink._contextMenuName);
+        ContextMenu.create(app, $(link), "a.content-link", contextOptions, BetterEntityLink._contextMenuName);
     }
 
     enhanceEntityLinks(app, html, data) {
@@ -125,7 +125,7 @@ export class BetterEntityLink {
 
         setTimeout(() => {
             for (let link of links) {
-                this.enhanceEntityLink($(link));
+                this.enhanceEntityLink(app, $(link));
             }
         }, 100);
     }
