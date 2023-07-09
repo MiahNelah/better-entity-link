@@ -172,7 +172,7 @@ Hooks.on('ready', () => {
         callback: async entity => await entity.resetDialog()        
     });
 
-
+    Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderJournalPageSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderItemSheet', BetterEntityLink.enhanceEntityLinks);
