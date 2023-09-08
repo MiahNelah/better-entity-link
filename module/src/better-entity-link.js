@@ -132,6 +132,14 @@ Hooks.on('ready', () => {
         }
     });
 
+    // JournalEntry - "Jump to Pin" button
+    BetterEntityLink.registerJournalEntryAction({
+        name: `${game.i18n.localize("SIDEBAR.JumpPin")}`,
+        icon: "fa-crosshairs",
+        condition: entity => !!game.journal.get(entity.id).sceneNote,
+        callback: async entity => game.journal.get(entity.id).panToNote()
+    });
+
     // Cardstacks - "Shuffle" button
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
