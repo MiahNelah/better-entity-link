@@ -176,7 +176,7 @@ Hooks.on('ready', () => {
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderJournalPageSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderItemSheet', BetterEntityLink.enhanceEntityLinks);
-    Hooks.on('renderChatMessage', BetterEntityLink.enhanceEntityLinks);
+    //Hooks.on('renderChatMessage', BetterEntityLink.enhanceEntityLinks);
 })
 
 /*
