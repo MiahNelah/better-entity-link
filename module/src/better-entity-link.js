@@ -140,6 +140,34 @@ Hooks.on('ready', () => {
         callback: async entity => game.journal.get(entity.id).panToNote()
     });
 
+    // JournalEntry - "Jump to Pin (View scene)" button
+    BetterEntityLink.registerJournalEntryAction({
+        name: `${game.i18n.localize("SIDEBAR.JumpPin")} (${game.i18n.localize("SCENES.View")})`,
+        icon: "fa-crosshairs",
+        condition: entity => {
+            const entry = game.journal.get(entity.id);
+            if (entry.sceneNote) return entry.sceneNote;
+            // Note not found in current scene, we look in all scenes
+            return game.scenes.filter(s => s.notes.filter(x => x.entryId === entity.id).length > 0).length > 0;
+        },
+        callback: async entity => {
+            const entry = game.journal.get(entity.id);
+            if (entry.sceneNote) return entry.panToNote();
+
+            // Note is not in current scene, we look in all scenes and take first match
+            const scene = game.scenes.filter(s => s.notes.filter(x => x.entryId === entity.id).length > 0)[0];
+            await scene.view();
+            
+            // We wait for canvas being ready, then pan to note
+            const intervalId = setInterval(() => {
+                if (canvas.ready) {
+                    clearInterval(intervalId);
+                    return entry.panToNote();
+                }                    
+            }, 250);
+        }
+    });
+
     // Cardstacks - "Shuffle" button
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
