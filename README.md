@@ -26,27 +26,31 @@ Roll a table from rolltable link:
 
 # Extensibility
 
-You are a developer and you want to add your own action to contextmenus? Here's how to !
+Here is how to implement some actions:
 ```js
 Hooks.on("ready", () => {
 
-  // Register an action for Scene document link
-  game.modules.get("better-entity-link").registerSceneAction({
-      name: "SCENES.View",
-      icon: "fa-eye fa-fw",
-      condition: async document => game.user.isGM,
-      callback:  async entity => await entity.view()
-  });
-  
-  // Register "Roll" action on RollTable document link
-  game.modules.get("better-entity-link").registerRolltableAction({
-      name: "TABLE.Roll",
-      icon: "fa-dice-d20",
-      condition: async document => game.user.isGM || game.user.isTrusted
-          || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(entity.permission),
-      callback:  async document => await document.draw()
-  });
+  // Check if module is available and activated
+  if (game.modules.get("better-entity-link").active) {
+
+    // Register an action for Scene document link
+    game.modules.get("better-entity-link").registerSceneAction({
+        name: "SCENES.View",
+        icon: "fa-eye fa-fw",
+        condition: (id, pack, data) => game.user.isGM,
+        callback:  async entity     => await entity.view()
+    });
     
+    // Register "Roll" action on RollTable document link
+    game.modules.get("better-entity-link").registerRolltableAction({
+        name: "TABLE.Roll",
+        icon: "fa-dice-d20",
+        condition: (id, pack, data) => game.user.isGM
+                                    || game.user.isTrusted
+                                    || [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER].includes(data?.permission),
+        callback:  async document   => await document.draw()
+    });
+  }
 }
 ```
 
@@ -57,13 +61,18 @@ Actions menu must be register on "ready" event. All module methods are registere
   * registerJournalEntryAction(options)
   * registerMacroAction(options)
   * registerRolltableAction(options)
+  * registerCardStacksAction(options)
+  * registerPlaylistAction(options)
 
 Argument `options` is an object like this:
 ```js
 {
-    name:      "Action label",        // Name of action displayed in contextmenu. Support i18n key.
-    icon:      "fa-eye",              // No need to give all <i> tag, just font-awesome icon name. You can give multiple ones
-    condition: async () => true,      // An optional async predicate to show or hide action whyen context menu is rendered
-    callback:  async (document) => {} // Async method to execute on click. `document` is resolved for you based on used register methods, id and pack in link.
+    name:      "Action label",                // Name of action displayed in contextmenu. Support i18n key.
+    icon:      "fa-eye",                      // No need to give all <i> tag, just font-awesome icon name. You can give multiple ones
+    condition: (id, pack, data) => true,      // An optional predicate to show or hide action when context menu is rendered.
+                                              //        ìd: document's id, should be resolved everytime
+                                              //      pack: document's pack, resolved if document is not into current world
+                                              //      data: document itself if document is in current world or indexed-only data if document is in a pack
+    callback:  async document   => {}         // Async method to execute on click. `document` is resolved for you based on used register methods, id and pack in link.
 }
 ```
