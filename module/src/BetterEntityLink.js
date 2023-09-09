@@ -97,7 +97,13 @@ export class BetterEntityLink {
         const actionMenu = {
             name: options.name,
             icon: `<i class="fas ${options.icon}"></i>`,
-            condition: li => options.condition instanceof Function && options.condition(li.data("id"), li.data("pack")),
+            condition: li => {
+                const documentId = li.data("id");
+                const packId = li.data("pack");
+                const data = packId ? game.packs.get(packId)?.index.get(documentId) : game.collections.get(entityType)?.get(documentId);
+                
+                return options.condition instanceof Function && options.condition(documentId, packId, data);
+            },
             callback: async li => {
                 const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
                 return await options.callback(entity);
