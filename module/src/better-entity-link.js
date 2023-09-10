@@ -55,7 +55,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerSceneAction({
         name: "SCENES.Activate",
         icon: "fa-bullseye",
-        condition: (uuid, data) => !(game.user.isGM || game.user.isTrusted) && data.active,
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.active,
         callback: async entity => await entity.activate()
     });
 
