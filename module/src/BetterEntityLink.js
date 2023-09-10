@@ -98,15 +98,14 @@ export class BetterEntityLink {
             name: options.name,
             icon: `<i class="fas ${options.icon}"></i>`,
             condition: li => {
-                const documentId = li.data("id");
-                const packId = li.data("pack");
-                const data = packId ? game.packs.get(packId)?.index.get(documentId) : game.collections.get(entityType)?.get(documentId);
-                
-                return options.condition instanceof Function && options.condition(documentId, packId, data);
+                const documentUuid = li.data("uuid");                
+                const document = fromUuidSync(documentUuid);                
+                return options.condition instanceof Function && options.condition(documentUuid, document);
             },
             callback: async li => {
-                const entity = await this._resolveEntity(entityType, li.data("id"), li.data("pack"));
-                return await options.callback(entity);
+                const documentUuid = li.data("uuid");                
+                const document = await fromUuid(documentUuid);
+                return await options.callback(document);
             }
         }
         this.contextMenus[entityType].push(actionMenu);
@@ -120,7 +119,7 @@ export class BetterEntityLink {
     }
 
     enhanceEntityLinks(app, html, data) {
-        if (html === null || html === undefined) return undefined;
+        if (!html === null || !html) return undefined;
 
         const links = html.find("a.content-link:not([data-contextmenu])");
         if (links === null || links === undefined || (Array.isArray(links) && !links.length)) return undefined;
@@ -132,20 +131,13 @@ export class BetterEntityLink {
         }, 100);
     }
 
-    async _resolveEntity(type, id, packId) {
-        if (packId) {            
-            return await game.packs.get(packId)?.getDocument(id);
-        }
-        return game.collections.get(type)?.get(id);
-    }
-
     _resolveEntityType(entityLink) {
         if (entityLink[0].hasAttribute("data-type")) return entityLink.data("type");
         if (entityLink[0].hasAttribute("data-pack")) {
             const packId = entityLink.data("pack");
             return game.packs.get(packId).documentName;
         }
-        // TODO: add resolving from <i> font-awesome icon class
+        // TODO: add resolving from <i> font-awesome icon class ?
         return undefined;
     }
 }
