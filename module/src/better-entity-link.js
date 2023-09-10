@@ -1,5 +1,25 @@
 import { BetterEntityLink } from "./BetterEntityLink.js";
 
+function renderImagePopup(image, title, uuid, shareable) {
+    const imagePoput = new ImagePopout(image, {
+        title: title,
+        shareable: shareable,
+        uuid: uuid
+    });
+    imagePoput.render(true);
+}
+
+async function showImage(uuid, title, type) {
+    await game.socket.emit("showEntry", uuid, type, true, entry => {
+        Journal._showEntry(uuid, type, true);
+        ui.notifications.info(game.i18n.format("JOURNAL.ActionShowSuccess", {
+            mode: type,
+            title: title,
+            which: "all"
+        }));
+    });
+}
+
 function permissionHelper(obj, permissions) {
     // empty or invalid obj must NOT block condition
     if (!obj || !obj.permission) return true;
@@ -27,7 +47,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerSceneAction({
         name: "SCENES.View",
         icon: "fa-eye",
-        condition: (id, pack, data) => (game.user.isGM || game.user.isTrusted) && !data.isView,
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.isView,
         callback: async entity => await entity.view()
     });
 
@@ -35,7 +55,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerSceneAction({
         name: "SCENES.Activate",
         icon: "fa-bullseye",
-        condition: (id, pack, data) => (game.user.isGM || game.user.isTrusted) && !data.active,
+        condition: (uuid, data) => !(game.user.isGM || game.user.isTrusted) && data.active,
         callback: async entity => await entity.activate()
     });
 
@@ -43,7 +63,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerRolltableAction({
         name: "TABLE.Roll",
         icon: "fa-dice-d20",
-        condition: (id, pack, data) => (game.user.isGM || game.user.isTrusted) || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
         callback: async entity => await entity.draw()
     });
 
@@ -51,99 +71,100 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerMacroAction({
         name: "MACRO.Edit",
         icon: "fa-edit",
-        condition: (id, pack, data) => game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
         callback: async entity => entity.sheet.render(true)
+    });
+
+    // Actor - "Select" button
+    BetterEntityLink.registerActorAction({
+        name: "CONTROLS.CanvasSelect",
+        icon: "fa-map-pin",
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid) && !canvas.tokens.controlled.some(x => x.actor.uuid === uuid),
+        callback: async entity => {
+            if (!canvas.tokens.active) canvas.tokens.activate();
+            const token = entity.getActiveTokens()[0];
+            canvas.tokens.selectObjects({x: token.x, y: token.y, width: token.w, height: token.h, releaseOthers: true});
+        }
+    });
+
+    // Actor - "Ping" button
+    BetterEntityLink.registerActorAction({
+        name: "CONTROLS.CanvasPing",
+        icon: "fa-map-pin",
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid),
+        callback: async entity => await canvas.ping(entity.getActiveTokens()[0].center)
+    });
+
+    // Actor - "Ping Alert" button
+    BetterEntityLink.registerActorAction({
+        name: "CONTROLS.CanvasPingAlert",
+        icon: "fa-map-pin",
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid),
+        callback: async entity => await canvas.ping(entity.getActiveTokens()[0].center, {style:CONFIG.Canvas.pings.types.ALERT})
+    });
+
+    // Actor - "Pull to Ping" button
+    BetterEntityLink.registerActorAction({
+        name: "CONTROLS.CanvasPingPull",
+        icon: "fa-map-pin",
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid),
+        callback: async entity => await canvas.ping(entity.getActiveTokens()[0].center, {style:CONFIG.Canvas.pings.types.PULL, pull:true})
+    });
+
+    // Actor - "Token Configuration" button
+    BetterEntityLink.registerActorAction({
+        name: "TOKEN.Title",
+        icon: "fa-user-circle",
+        condition: (uuid, data) => data?.prototypeToken && (game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER])),
+        callback: async entity => new CONFIG.Token.prototypeSheetClass(entity.prototypeToken).render(true)
     });
 
     // Actor - "View Character Artwork" button
     BetterEntityLink.registerActorAction({
         name: "SIDEBAR.CharArt",
         icon: "fa-image",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN
-            && (game.user.isGM
-                || game.user.isTrusted
-                || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER])),
-        callback: async entity => {
-            const imagePoput = new ImagePopout(entity?.img, {
-                title: entity.name,
-                shareable: true,
-                uuid: entity.uuid
-            });
-            imagePoput.render(true);
-        }
+        condition: (uuid, data) => data?.img && ![undefined, null, CONST.DEFAULT_TOKEN].includes(data?.img),
+        callback: async entity => renderImagePopup(entity.img, entity.name, entity.uuid, true)
     });
 
     // Actor - "View Token Artwork" button
     BetterEntityLink.registerActorAction({
         name: "SIDEBAR.TokenArt",
         icon: "fa-image",
-        condition: (id, pack, data) => {
-            if (data?.prototypeToken?.texture?.src) return false;
-            return ![undefined, null, CONST.DEFAULT_TOKEN].includes(data?.prototypeToken.texture.src)
-                && (game.user.isGM
-                    || game.user.isTrusted
-                    || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]))
-        },
-        callback: async entity => {
-            const imagePoput = new ImagePopout(entity?.prototypeToken.texture.src, {
-                title: entity.name,
-                shareable: true,
-                uuid: entity.uuid
-            });
-            imagePoput.render(true);
-        }
+        condition: (uuid, data) => data?.prototypeToken?.texture?.src && ![undefined, null, CONST.DEFAULT_TOKEN].includes(data?.prototypeToken.texture.src),
+        callback: async entity => renderImagePopup(entity.prototypeToken.texture.src, entity.name, entity.uuid, true)
     });
 
     // Item - "View Item Artwork" button
     BetterEntityLink.registerItemAction({
         name: "ITEM.ViewArt",
         icon: "fa-image",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN
-            && (game.user.isGM
-                || game.user.isTrusted
-                || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER])),
-        callback: async entity => {
-            const imagePoput = new ImagePopout(entity?.img, {
-                title: entity.name,
-                shareable: true,
-                uuid: entity.uuid
-            });
-            imagePoput.render(true);
-        }
+        condition: (uuid, data) => ![undefined, null, CONST.DEFAULT_TOKEN].includes(data?.img),
+        callback: async entity => renderImagePopup(entity.img, entity.name, entity.uuid, true)
+    });
+
+    // Item - "View Item Artwork" button
+    BetterEntityLink.registerItemAction({
+        name: "Open Owner Sheet",
+        icon: "fa-crown",
+        condition: (uuid, data) => data && data.isEmbedded && data.parent,
+        callback: async entity => entity.parent.sheet.render(true)
     });
 
     // JournalEntry - "Show players (Text)" button
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
         icon: "fa-eye",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
-        callback: async entity => {
-            await game.socket.emit("showEntry", entity.uuid, "text", true, entry => {
-                Journal._showEntry(entity.uuid, "text", true);
-                ui.notifications.info(game.i18n.format("JOURNAL.ActionShowSuccess", {
-                    mode: "text",
-                    title: entity.name,
-                    which: "all"
-                }));
-            });
-        }
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => await showImage(entity.uuid, entity.name, "text")
     });
 
     // JournalEntry - "Show players (Image)" button
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeImage")})`,
         icon: "fa-eye",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
-        callback: async entity => {
-            await game.socket.emit("showEntry", entity.uuid, "image", true, entry => {
-                Journal._showEntry(entity.uuid, "image", true);
-                ui.notifications.info(game.i18n.format("JOURNAL.ActionShowSuccess", {
-                    mode: "image",
-                    title: entity.name,
-                    which: "all"
-                }));
-            });
-        }
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => await showImage(entity.uuid, entity.name, "image")
     });
 
     // JournalEntry - "Jump to Pin" button
@@ -151,7 +172,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerJournalEntryAction({
         name: "SIDEBAR.JumpPin",
         icon: "fa-crosshairs",
-        condition: (id, pack, data) => data.sceneNote ? true
+        condition: (uuid, data) => data.sceneNote ? true
             : game.scenes.filter(s => s.notes.filter(x => x.entryId === data.id).length > 0).length > 0,
         callback: async entity => {
             if (entity.scenenote)
@@ -163,16 +184,6 @@ Hooks.on('ready', () => {
 
             // Wait 30s maximum for canvas to be ready before panning to note. Check is done every 0.5 second.
             safeSetInterval(() => canvas.ready, () => entity.panToNote(), 500, 30000);
-
-            // We wait for canvas being ready, then pan to note
-            /*
-            const intervalId = setInterval(() => {
-                if (canvas.ready) {
-                    clearInterval(intervalId);
-                    return entity.panToNote();
-                }
-            }, 250);
-            */
         }
     });
 
@@ -180,7 +191,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
         icon: "fa-random",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, { sensitivity: "base" }) !== 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, { sensitivity: "base" }) !== 0,
         callback: async entity => await entity.shuffle()
     });
 
@@ -188,7 +199,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Draw",
         icon: "fa-edit",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, { sensitivity: "base" }) === 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, { sensitivity: "base" }) === 0,
         callback: async entity => await entity.drawDialog()
     });
 
@@ -196,7 +207,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Deal",
         icon: "fa-share-square",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, { sensitivity: "base" }) === 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, { sensitivity: "base" }) === 0,
         callback: async entity => await entity.dealDialog()
     });
 
@@ -204,7 +215,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Pass",
         icon: "fa-share-square",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, { sensitivity: "base" }) !== 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, { sensitivity: "base" }) !== 0,
         callback: async entity => await entity.passDialog()
     });
 
@@ -212,7 +223,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Reset",
         icon: "fa-undo",
-        condition: (id, pack, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async entity => await entity.resetDialog()
     });
 
