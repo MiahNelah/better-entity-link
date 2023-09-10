@@ -67,6 +67,14 @@ Hooks.on('ready', () => {
         callback: async entity => await entity.draw()
     });
 
+    // RollTable - "Configure Ownership" button
+    BetterEntityLink.registerRolltableAction({
+        name: "OWNERSHIP.Configure",
+        icon: "fa-lock fa-fw",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
+        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
+    });
+
     // Macro - "Edit Macro" button
     BetterEntityLink.registerMacroAction({
         name: "MACRO.Edit",
@@ -78,12 +86,25 @@ Hooks.on('ready', () => {
     // Actor - "Select" button
     BetterEntityLink.registerActorAction({
         name: "CONTROLS.CanvasSelect",
-        icon: "fa-map-pin",
-        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid) && !canvas.tokens.controlled.some(x => x.actor.uuid === uuid),
+        icon: "fa-hand-pointer",
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
         callback: async entity => {
             if (!canvas.tokens.active) canvas.tokens.activate();
-            const token = entity.getActiveTokens()[0];
-            canvas.tokens.selectObjects({x: token.x, y: token.y, width: token.w, height: token.h, releaseOthers: true});
+            canvas.tokens.releaseAll();
+            entity.getActiveTokens().forEach(x => x.control({releaseOthers: false}));
+        }
+    });
+
+    // Actor - "Target" button
+    BetterEntityLink.registerActorAction({
+        name: "CONTROLS.TargetSelect",
+        icon: "fa-bullseye",
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        callback: async entity => {
+            if (!canvas.tokens.active) canvas.tokens.activate();
+            entity.getActiveTokens()
+                .filter(token => !token.isTargeted)
+                .forEach(token => token.setTarget(true, {releaseOthers: false}));
         }
     });
 
@@ -91,24 +112,24 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerActorAction({
         name: "CONTROLS.CanvasPing",
         icon: "fa-map-pin",
-        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid),
-        callback: async entity => await canvas.ping(entity.getActiveTokens()[0].center)
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),        
+        callback: async entity => Promise.all(entity.getActiveTokens().map(async x => canvas.ping(x.center)))
     });
 
     // Actor - "Ping Alert" button
     BetterEntityLink.registerActorAction({
         name: "CONTROLS.CanvasPingAlert",
         icon: "fa-map-pin",
-        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid),
-        callback: async entity => await canvas.ping(entity.getActiveTokens()[0].center, {style:CONFIG.Canvas.pings.types.ALERT})
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        callback: async entity => Promise.all(entity.getActiveTokens().map(async x => canvas.ping(x.center, {style:CONFIG.Canvas.pings.types.ALERT})))
     });
 
     // Actor - "Pull to Ping" button
     BetterEntityLink.registerActorAction({
         name: "CONTROLS.CanvasPingPull",
         icon: "fa-map-pin",
-        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid === uuid),
-        callback: async entity => await canvas.ping(entity.getActiveTokens()[0].center, {style:CONFIG.Canvas.pings.types.PULL, pull:true})
+        condition: (uuid, data) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        callback: async entity => Promise.all(entity.getActiveTokens().map(async x => canvas.ping(x.center, {style:CONFIG.Canvas.pings.types.PULL, pull:true})))
     });
 
     // Actor - "Token Configuration" button
@@ -135,6 +156,14 @@ Hooks.on('ready', () => {
         callback: async entity => renderImagePopup(entity.prototypeToken.texture.src, entity.name, entity.uuid, true)
     });
 
+    // Actor - "Configure Ownership" button
+    BetterEntityLink.registerActorAction({
+        name: "OWNERSHIP.Configure",
+        icon: "fa-lock fa-fw",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
+        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
+    });
+
     // Item - "View Item Artwork" button
     BetterEntityLink.registerItemAction({
         name: "ITEM.ViewArt",
@@ -149,6 +178,14 @@ Hooks.on('ready', () => {
         icon: "fa-crown",
         condition: (uuid, data) => data && data.isEmbedded && data.parent,
         callback: async entity => entity.parent.sheet.render(true)
+    });
+
+    // Item - "Configure Ownership" button
+    BetterEntityLink.registerItemAction({
+        name: "OWNERSHIP.Configure",
+        icon: "fa-lock fa-fw",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
+        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
 
     // JournalEntry - "Show players (Text)" button
@@ -185,6 +222,14 @@ Hooks.on('ready', () => {
             // Wait 30s maximum for canvas to be ready before panning to note. Check is done every 0.5 second.
             safeSetInterval(() => canvas.ready, () => entity.panToNote(), 500, 30000);
         }
+    });
+
+    // JournalEntry - "Configure Ownership" button
+    BetterEntityLink.registerJournalEntryAction({
+        name: "OWNERSHIP.Configure",
+        icon: "fa-lock fa-fw",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
+        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
 
     // Cardstacks - "Shuffle" button
@@ -225,6 +270,14 @@ Hooks.on('ready', () => {
         icon: "fa-undo",
         condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async entity => await entity.resetDialog()
+    });
+
+    // Cardstacks - "Configure Ownership" button
+    BetterEntityLink.registerCardStacksAction({
+        name: "OWNERSHIP.Configure",
+        icon: "fa-lock fa-fw",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
+        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
 
     Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
