@@ -145,7 +145,7 @@ Hooks.on('ready', () => {
 
     // Item - "View Item Artwork" button
     BetterEntityLink.registerItemAction({
-        name: "Open Owner Sheet",
+        name: "OWNERSHIP.OWNER",
         icon: "fa-crown",
         condition: (uuid, data) => data && data.isEmbedded && data.parent,
         callback: async entity => entity.parent.sheet.render(true)
