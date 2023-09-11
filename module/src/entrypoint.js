@@ -330,6 +330,13 @@ function registerPlaylistActions() {
         condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
         callback: async document => await document.sheet.render(true)
     });
+
+    BetterDocumentLink.registerPlaylistAction({
+        name: "PLAYLIST.Forward",
+        icon: "fa-forward",
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && data.playing,
+        callback: async document => await document.playNext(undefined, {direction:1})
+    });
 }
 
 Hooks.on('ready', () => {
