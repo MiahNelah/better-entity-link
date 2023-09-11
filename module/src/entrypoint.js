@@ -346,6 +346,10 @@ function registerPlaylistActions() {
     });
 }
 
+function registerPlaylistSoundActions() {
+
+}
+
 Hooks.on('ready', () => {
 
     registerActorActions();
@@ -357,6 +361,7 @@ Hooks.on('ready', () => {
     registerRollTableActions();
     registerCardsActions();
     registerPlaylistActions();
+    registerPlaylistSoundActions();
 
     Hooks.on('renderJournalSheet', BetterDocumentLink.enhanceDocumentLinks);
     Hooks.on('renderActorSheet', BetterDocumentLink.enhanceDocumentLinks);
