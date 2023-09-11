@@ -1,5 +1,5 @@
-# Better Entity Link
-Improve your productivity with contextmenus on entity links!
+# Better Document Link
+Improve your productivity with contextmenus on document links!
 
 
 🚀 No configuration
@@ -37,8 +37,8 @@ Hooks.on("ready", () => {
     game.modules.get("better-entity-link").registerSceneAction({
         name: "SCENES.View",
         icon: "fa-eye fa-fw",
-        condition: (uuid, data) => game.user.isGM,
-        callback:  async entity => await entity.view()
+        condition: (uuid, data)   => game.user.isGM,
+        callback:  async document => await entity.view()
     });
     
     // Register "Roll" action on RollTable document link
@@ -59,10 +59,12 @@ Actions menu must be register on "ready" event. All module methods are registere
   * registerItemAction(options)
   * registerSceneAction(options)
   * registerJournalEntryAction(options)
+  * registerJournalEntryPageAction(options)
   * registerMacroAction(options)
   * registerRolltableAction(options)
   * registerCardStacksAction(options)
   * registerPlaylistAction(options)
+  * registerPlaylistSoundAction(options)
 
 Argument `options` is an object like this:
 ```js
