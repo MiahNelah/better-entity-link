@@ -124,7 +124,7 @@ export class BetterEntityLink {
         ContextMenu.create(app, $(link), "a.content-link", contextOptions, BetterEntityLink._contextMenuName);
     }
 
-    enhanceEntityLinks(app, html, data) {
+    enhanceEntityLinks(app, html) {
         if (!html === null || !html) return undefined;
 
         const links = html.find("a.content-link:not([data-contextmenu])");
