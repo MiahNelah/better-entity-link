@@ -3,3 +3,24 @@ a.content-link nav#context-menu {
     text-shadow: none;
 }
 
+/* Sepcial fixes for Playlist and PlaylistSound links */
+/*
+    Foundry's link styling override all sub-icon when sertting content directive :
+        a.content-link.playing i:before,
+            a.inline-roll.playing i:before {
+            content: "\f0c8";
+        }
+    TODO: Find a way to restore normal behavior for contextmenu icons without modyfing Foundr's default style
+          and without defining specific rule for each entry.
+ */
+a.content-link.playing nav#context-menu i.fa-edit:before {
+    content: "\f044";
+}
+
+a.content-link.playing nav#context-menu i.fa-forward:before {
+    content: "\f04e";
+}
+
+a.content-link.playing nav#context-menu i.fa-backward:before {
+    content: "\f04a";
+}
