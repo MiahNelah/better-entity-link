@@ -348,6 +348,12 @@ function registerPlaylistActions() {
 
 function registerPlaylistSoundActions() {
 
+    BetterDocumentLink.registerPlaylistSoundAction({
+        name: "PLAYLIST.SoundEdit",
+        icon: "fa-edit",
+        condition: () => game.user.isGM || game.user.isTrusted,
+        callback: async document => await document.sheet.render(true)
+    });
 
     BetterDocumentLink.registerPlaylistSoundAction({
         name: "PLAYLIST.SoundPreload",
