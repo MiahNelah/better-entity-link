@@ -348,6 +348,13 @@ function registerPlaylistActions() {
 
 function registerPlaylistSoundActions() {
 
+
+    BetterDocumentLink.registerPlaylistSoundAction({
+        name: "PLAYLIST.SoundPreload",
+        icon: "fa-download",
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.playing,
+        callback: async document => await AudioHelper.preloadSound(document)
+    });
 }
 
 Hooks.on('ready', () => {
