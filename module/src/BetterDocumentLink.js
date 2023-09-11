@@ -60,6 +60,10 @@ export class BetterDocumentLink {
         return BetterDocumentLink.registerAction("Playlist", options);
     }
 
+    static registerPlaylistSoundAction(options) {
+        return BetterDocumentLink.registerAction("PlaylistSound", options);
+    }
+
     static _defaultContextMenu() {
         return {
             "Actor": [],
@@ -70,7 +74,8 @@ export class BetterDocumentLink {
             "Macro": [],
             "RollTable": [],
             "Cards": [],
-            "Playlist": []
+            "Playlist": [],
+            "PlaylistSound": []
         };
     }
 
@@ -92,6 +97,7 @@ export class BetterDocumentLink {
         module.registerRolltableAction = BetterDocumentLink.registerRolltableAction;
         module.registerCardStacksAction = BetterDocumentLink.registerCardStacksAction;
         module.registerPlaylistAction = BetterDocumentLink.registerPlaylistAction;
+        module.registerPlaylistSoundAction = BetterDocumentLink.registerPlaylistSoundAction;
     }
 
     constructor(module) {
