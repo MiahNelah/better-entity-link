@@ -1,7 +1,7 @@
 {
   "id": "better-entity-link",
-  "title": "Better Entity Link",
-  "description": "Improve your productivity with contextmenus on entity links!",
+  "title": "Better Document Link",
+  "description": "Improve your productivity with contextmenus on document links!",
   "version": "0.0.1",  
   "compatibility": {
     "minimum": "11",
