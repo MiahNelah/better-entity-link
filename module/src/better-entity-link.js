@@ -23,7 +23,7 @@ async function showImage(uuid, title, type) {
 function permissionHelper(obj, permissions) {
     // empty or invalid obj must NOT block condition
     if (!obj || !obj.permission) return true;
-    if (!permissions || !(permissions instanceof Array) || permissions.length == 0) return true;
+    if (!permissions || !(permissions instanceof Array) || permissions.length === 0) return true;
     return permissions.includes(obj.permission);
 }
 
