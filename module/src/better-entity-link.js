@@ -10,7 +10,7 @@ function renderImagePopup(image, title, uuid, shareable) {
 }
 
 async function showImage(uuid, title, type) {
-    await game.socket.emit("showEntry", uuid, type, true, entry => {
+    await game.socket.emit("showEntry", uuid, type, true, () => {
         Journal._showEntry(uuid, type, true);
         ui.notifications.info(game.i18n.format("JOURNAL.ActionShowSuccess", {
             mode: type,
