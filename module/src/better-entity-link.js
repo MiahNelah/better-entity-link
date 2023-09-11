@@ -248,6 +248,14 @@ Hooks.on('ready', () => {
         callback: async entity => await showImage(entity.uuid, entity.name, "image")
     });
 
+    // JournalEntryPage - "Configure Ownership" button
+    BetterEntityLink.registerJournalEntryPageAction({
+        name: "OWNERSHIP.Configure",
+        icon: "fa-lock fa-fw",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
+        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
+    });
+
     // Cardstacks - "Shuffle" button
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
