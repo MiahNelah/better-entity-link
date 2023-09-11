@@ -1,4 +1,4 @@
-import { BetterEntityLink } from "./BetterEntityLink.js";
+import {BetterEntityLink} from "./BetterEntityLink.js";
 
 function renderImagePopup(image, title, uuid, shareable) {
     const imagePoput = new ImagePopout(image, {
@@ -41,48 +41,8 @@ function safeSetInterval(condition, callback, delay, timeout) {
     }, delay);
 }
 
-Hooks.on('ready', () => {
 
-    // Scene - "View" button
-    BetterEntityLink.registerSceneAction({
-        name: "SCENES.View",
-        icon: "fa-eye",
-        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.isView,
-        callback: async entity => await entity.view()
-    });
-
-    // Scene - "Activate" button
-    BetterEntityLink.registerSceneAction({
-        name: "SCENES.Activate",
-        icon: "fa-bullseye",
-        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.active,
-        callback: async entity => await entity.activate()
-    });
-
-    // RollTable - "Roll" button
-    BetterEntityLink.registerRolltableAction({
-        name: "TABLE.Roll",
-        icon: "fa-dice-d20",
-        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
-        callback: async entity => await entity.draw()
-    });
-
-    // RollTable - "Configure Ownership" button
-    BetterEntityLink.registerRolltableAction({
-        name: "OWNERSHIP.Configure",
-        icon: "fa-lock fa-fw",
-        condition: () => game.user.isGM || game.user.isTrusted,
-        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
-    });
-
-    // Macro - "Edit Macro" button
-    BetterEntityLink.registerMacroAction({
-        name: "MACRO.Edit",
-        icon: "fa-edit",
-        condition: (uuid, data) => game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
-        callback: async entity => entity.sheet.render(true)
-    });
-
+function registerActorActions() {
     // Actor - "Select" button
     BetterEntityLink.registerActorAction({
         name: "CONTROLS.CanvasSelect",
@@ -121,7 +81,7 @@ Hooks.on('ready', () => {
         name: "CONTROLS.CanvasPingAlert",
         icon: "fa-map-pin",
         condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
-        callback: async entity => Promise.all(entity.getActiveTokens().map(async x => canvas.ping(x.center, {style:CONFIG.Canvas.pings.types.ALERT})))
+        callback: async entity => Promise.all(entity.getActiveTokens().map(async x => canvas.ping(x.center, {style: CONFIG.Canvas.pings.types.ALERT})))
     });
 
     // Actor - "Pull to Ping" button
@@ -129,7 +89,10 @@ Hooks.on('ready', () => {
         name: "CONTROLS.CanvasPingPull",
         icon: "fa-map-pin",
         condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
-        callback: async entity => Promise.all(entity.getActiveTokens().map(async x => canvas.ping(x.center, {style:CONFIG.Canvas.pings.types.PULL, pull:true})))
+        callback: async entity => Promise.all(entity.getActiveTokens().map(async x => canvas.ping(x.center, {
+            style: CONFIG.Canvas.pings.types.PULL,
+            pull: true
+        })))
     });
 
     // Actor - "Token Configuration" button
@@ -163,7 +126,9 @@ Hooks.on('ready', () => {
         condition: () => game.user.isGM || game.user.isTrusted,
         callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
+}
 
+function registerItemActions() {
     // Item - "View Item Artwork" button
     BetterEntityLink.registerItemAction({
         name: "ITEM.ViewArt",
@@ -187,7 +152,27 @@ Hooks.on('ready', () => {
         condition: () => game.user.isGM || game.user.isTrusted,
         callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
+}
 
+function registerSceneActions() {
+    // Scene - "View" button
+    BetterEntityLink.registerSceneAction({
+        name: "SCENES.View",
+        icon: "fa-eye",
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.isView,
+        callback: async entity => await entity.view()
+    });
+
+    // Scene - "Activate" button
+    BetterEntityLink.registerSceneAction({
+        name: "SCENES.Activate",
+        icon: "fa-bullseye",
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.active,
+        callback: async entity => await entity.activate()
+    });
+}
+
+function registerJournalEntryActions() {
     // JournalEntry - "Show players (Text)" button
     BetterEntityLink.registerJournalEntryAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
@@ -231,7 +216,9 @@ Hooks.on('ready', () => {
         condition: () => game.user.isGM || game.user.isTrusted,
         callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
+}
 
+function registerJournalEntryPageActions() {
     // JournalEntryPage - "Show players (Text)" button
     BetterEntityLink.registerJournalEntryPageAction({
         name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
@@ -255,12 +242,42 @@ Hooks.on('ready', () => {
         condition: () => game.user.isGM || game.user.isTrusted,
         callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
+}
 
+function registerMacroActions() {
+    // Macro - "Edit Macro" button
+    BetterEntityLink.registerMacroAction({
+        name: "MACRO.Edit",
+        icon: "fa-edit",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
+        callback: async entity => entity.sheet.render(true)
+    });
+}
+
+function registerRollTableActions() {
+    // RollTable - "Roll" button
+    BetterEntityLink.registerRolltableAction({
+        name: "TABLE.Roll",
+        icon: "fa-dice-d20",
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
+        callback: async entity => await entity.draw()
+    });
+
+    // RollTable - "Configure Ownership" button
+    BetterEntityLink.registerRolltableAction({
+        name: "OWNERSHIP.Configure",
+        icon: "fa-lock fa-fw",
+        condition: () => game.user.isGM || game.user.isTrusted,
+        callback: async entity => new DocumentOwnershipConfig(entity).render(true)
+    });
+}
+
+function registerCardsActions() {
     // Cardstacks - "Shuffle" button
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
         icon: "fa-random",
-        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, { sensitivity: "base" }) !== 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, {sensitivity: "base"}) !== 0,
         callback: async entity => await entity.shuffle()
     });
 
@@ -268,7 +285,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Draw",
         icon: "fa-edit",
-        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, { sensitivity: "base" }) === 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("hand", undefined, {sensitivity: "base"}) === 0,
         callback: async entity => await entity.drawDialog()
     });
 
@@ -276,7 +293,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Deal",
         icon: "fa-share-square",
-        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, { sensitivity: "base" }) === 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, {sensitivity: "base"}) === 0,
         callback: async entity => await entity.dealDialog()
     });
 
@@ -284,7 +301,7 @@ Hooks.on('ready', () => {
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Pass",
         icon: "fa-share-square",
-        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, { sensitivity: "base" }) !== 0,
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted) && data.type.localeCompare("deck", undefined, {sensitivity: "base"}) !== 0,
         callback: async entity => await entity.passDialog()
     });
 
@@ -303,6 +320,22 @@ Hooks.on('ready', () => {
         condition: () => game.user.isGM || game.user.isTrusted,
         callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
+}
+
+function registerPlaylistActions() {
+}
+
+Hooks.on('ready', () => {
+
+    registerActorActions();
+    registerItemActions();
+    registerSceneActions();
+    registerJournalEntryActions();
+    registerJournalEntryPageActions();
+    registerMacroActions();
+    registerRollTableActions();
+    registerCardsActions();
+    registerPlaylistActions();
 
     Hooks.on('renderJournalSheet', BetterEntityLink.enhanceEntityLinks);
     Hooks.on('renderActorSheet', BetterEntityLink.enhanceEntityLinks);
