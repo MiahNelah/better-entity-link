@@ -240,6 +240,14 @@ Hooks.on('ready', () => {
         callback: async entity => await showImage(entity.uuid, entity.name, "text")
     });
 
+    // JournalEntryPage - "Show players (Image)" button
+    BetterEntityLink.registerJournalEntryPageAction({
+        name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeImage")})`,
+        icon: "fa-eye",
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => await showImage(entity.uuid, entity.name, "image")
+    });
+
     // Cardstacks - "Shuffle" button
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
