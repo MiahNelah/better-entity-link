@@ -232,6 +232,14 @@ Hooks.on('ready', () => {
         callback: async entity => new DocumentOwnershipConfig(entity).render(true)
     });
 
+    // JournalEntryPage - "Show players (Text)" button
+    BetterEntityLink.registerJournalEntryPageAction({
+        name: `${game.i18n.localize("JOURNAL.ActionShow")} (${game.i18n.localize("JOURNAL.ModeText")})`,
+        icon: "fa-eye",
+        condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
+        callback: async entity => await showImage(entity.uuid, entity.name, "text")
+    });
+
     // Cardstacks - "Shuffle" button
     BetterEntityLink.registerCardStacksAction({
         name: "CARDS.Shuffle",
