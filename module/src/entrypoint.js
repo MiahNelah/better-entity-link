@@ -323,6 +323,13 @@ function registerCardsActions() {
 }
 
 function registerPlaylistActions() {
+
+    BetterDocumentLink.registerPlaylistAction({
+        name: "PLAYLIST.Edit",
+        icon: "fa-edit",
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted,
+        callback: async document => await document.sheet.render(true)
+    });
 }
 
 Hooks.on('ready', () => {
