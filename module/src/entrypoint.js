@@ -170,6 +170,14 @@ function registerSceneActions() {
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.active,
         callback: async document => await document.activate()
     });
+
+    // Scene - "Preload" button
+    BetterDocumentLink.registerSceneAction({
+        name: "SCENES.Preload",
+        icon: "fa-download",
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted),
+        callback: async document => await game.scenes.preload(document.id)
+    });
 }
 
 function registerJournalEntryActions() {
