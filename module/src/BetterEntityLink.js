@@ -75,7 +75,7 @@ export class BetterEntityLink {
         const module = game.modules.get(BetterEntityLink.id);
         const instance = new BetterEntityLink(module);
         module.registerAction =  instance.registerAction;
-        module.enhanceEntityLink = instance.registerAction;
+        module.enhanceEntityLink = instance.enhanceEntityLink;
         module.enhanceEntityLinks = instance.enhanceEntityLinks;
 
         module.registerActorAction = BetterEntityLink.registerActorAction;
