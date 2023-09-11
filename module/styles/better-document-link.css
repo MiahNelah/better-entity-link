@@ -24,3 +24,7 @@ a.content-link.playing nav#context-menu i.fa-forward:before {
 a.content-link.playing nav#context-menu i.fa-backward:before {
     content: "\f04a";
 }
+
+a.content-link.playing nav#context-menu i.fa-download:before {
+    content: "\f019";
+}
