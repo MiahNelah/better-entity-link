@@ -332,6 +332,13 @@ function registerPlaylistActions() {
     });
 
     BetterDocumentLink.registerPlaylistAction({
+        name: "PLAYLIST.Backward",
+        icon: "fa-backward",
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && data.playing,
+        callback: async document => await document.playNext(undefined, {direction:-1})
+    });
+
+    BetterDocumentLink.registerPlaylistAction({
         name: "PLAYLIST.Forward",
         icon: "fa-forward",
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && data.playing,
