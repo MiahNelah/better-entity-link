@@ -99,7 +99,7 @@ function registerActorActions() {
     BetterDocumentLink.registerActorAction({
         name: "TOKEN.Title",
         icon: "fa-user-circle",
-        condition: (uuid, data) => data?.prototypeToken && (game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER])),
+        condition: (uuid, data) => data?.prototypeToken && (game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER])),
         callback: async document => new CONFIG.Token.prototypeSheetClass(document.prototypeToken).render(true)
     });
 
@@ -257,7 +257,7 @@ function registerMacroActions() {
     BetterDocumentLink.registerMacroAction({
         name: "MACRO.Edit",
         icon: "fa-edit",
-        condition: (uuid, data) => game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
+        condition: (uuid, data) => game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER]),
         callback: async document => document.sheet.render(true)
     });
 }
@@ -267,7 +267,7 @@ function registerRollTableActions() {
     BetterDocumentLink.registerRolltableAction({
         name: "TABLE.Roll",
         icon: "fa-dice-d20",
-        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) || permissionHelper(data, [CONST.ENTITY_PERMISSIONS.OBSERVER, CONST.ENTITY_PERMISSIONS.OWNER]),
+        condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) || permissionHelper(data, [CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER]),
         callback: async document => await document.draw()
     });
 
