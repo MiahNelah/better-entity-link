@@ -269,7 +269,7 @@ function registerJournalEntryPageActions() {
             // However, if you place some page of the very same journal into canvas BEFORE journal itself, jumping to journal
             // will always jump to the first page pin.
             // To avoid this, we look for a note into current scene matching journal's id which are a JournalEntryPage.              
-            const note = canvas.notes.placeables.find(x => x.document.entryId == document.parent.id && x.document.page);
+            const note = canvas.notes.placeables.find(x => x.document.entryId == document.parent.id && x.document.pageId == document.id);
 
             // Wait 30s maximum for canvas to be ready before panning to note. Check is done every 0.5 second.          
             if (note)
