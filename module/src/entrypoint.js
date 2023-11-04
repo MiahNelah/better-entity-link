@@ -203,17 +203,24 @@ function registerJournalEntryActions() {
         name: "SIDEBAR.JumpPin",
         icon: "fa-crosshairs",
         condition: (uuid, data) => data.sceneNote ? true
-            : game.scenes.filter(s => s.notes.filter(x => x.entryId === data.id).length > 0).length > 0,
+            : game.scenes.filter(s => s.notes.filter(x => x.entryId === data.id && !x.pageId).length > 0).length > 0,
         callback: async document => {
-            if (document.scenenote)
-                return document.panToNote();
-
+            if (document.sceneNote)
+                return await canvas.notes.panToNote(document.sceneNote);
+            
             // Note is not in current scene, we look in all scenes and take first match
             const scene = game.scenes.filter(s => s.notes.filter(x => x.entryId === document.id).length > 0)[0];
             await scene.view();
 
-            // Wait 30s maximum for canvas to be ready before panning to note. Check is done every 0.5 second.
-            safeSetInterval(() => canvas.ready, () => entity.panToNote(), 500, 30000);
+            // Here is a little trick: note.panToNote() is rarely basic and get the really first note with matching journal id.
+            // However, if you place some page of the very same journal into canvas BEFORE journal itself, jumping to journal
+            // will always jump to the first page pin.
+            // To avoid this, we look for a note into current scene matching journal's id which are not a JournalEntryPage.
+            const note = canvas.notes.placeables.find(x => x.document.entryId == document.id && !x.document.page);
+
+            // Wait 30s maximum for canvas to be ready before panning to note. Check is done every 0.5 second.            
+            if (note)
+                safeSetInterval(() => canvas.ready, async () => await canvas.notes.panToNote(note), 500, 30000);            
         }
     });
 
@@ -241,6 +248,33 @@ function registerJournalEntryPageActions() {
         icon: "fa-eye",
         condition: (uuid, data) => data?.img !== CONST.DEFAULT_TOKEN && (game.user.isGM || game.user.isTrusted),
         callback: async document => await showImage(document.uuid, document.name, "image")
+    });
+
+    // JournalEntry - "Jump to Pin" button
+    // If no pin is found in current scene, look up for pins in others scenes
+    BetterDocumentLink.registerJournalEntryPageAction({
+        name: "SIDEBAR.JumpPin",
+        icon: "fa-crosshairs",
+        condition: (uuid, data) => data.sceneNote ? true
+            : game.scenes.filter(s => s.notes.filter(x => x.pageId === data.id && x.pageId).length > 0).length > 0,
+        callback: async document => {
+            if (document.sceneNote)
+                return await canvas.notes.panToNote(document.sceneNote);
+
+            // Note is not in current scene, we look in all scenes and take first match
+            const scene = game.scenes.filter(s => s.notes.filter(x => x.pageId === document.id).length > 0)[0];
+            await scene.view();
+
+            // Here is a little trick: note.panToNote() is rarely basic and get the really first note with matching journal id.
+            // However, if you place some page of the very same journal into canvas BEFORE journal itself, jumping to journal
+            // will always jump to the first page pin.
+            // To avoid this, we look for a note into current scene matching journal's id which are a JournalEntryPage.              
+            const note = canvas.notes.placeables.find(x => x.document.entryId == document.parent.id && x.document.page);
+
+            // Wait 30s maximum for canvas to be ready before panning to note. Check is done every 0.5 second.          
+            if (note)
+                safeSetInterval(() => canvas.ready, async () => await canvas.notes.panToNote(note), 500, 30000);        
+        }
     });
 
     // JournalEntryPage - "Configure Ownership" button
