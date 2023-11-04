@@ -209,7 +209,7 @@ function registerJournalEntryActions() {
                 return await canvas.notes.panToNote(document.sceneNote);
             
             // Note is not in current scene, we look in all scenes and take first match
-            const scene = game.scenes.filter(s => s.notes.filter(x => x.entryId === document.id).length > 0)[0];
+            const scene = game.scenes.filter(s => s.notes.filter(x => x.entryId === document.id && !x.pageId).length > 0)[0];
             await scene.view();
 
             // Here is a little trick: note.panToNote() is rarely basic and get the really first note with matching journal id.
@@ -262,7 +262,7 @@ function registerJournalEntryPageActions() {
                 return await canvas.notes.panToNote(document.sceneNote);
 
             // Note is not in current scene, we look in all scenes and take first match
-            const scene = game.scenes.filter(s => s.notes.filter(x => x.pageId === document.id).length > 0)[0];
+            const scene = game.scenes.filter(s => s.notes.filter(x => x.pageId === document.id && x.entryId == document.parent.id).length > 0)[0];
             await scene.view();
 
             // Here is a little trick: note.panToNote() is rarely basic and get the really first note with matching journal id.
