@@ -101,7 +101,7 @@ export class BetterDocumentLink {
     }
 
     constructor(module) {
-        this.contextMenus = duplicate(BetterDocumentLink._defaultContextMenu());
+        this.contextMenus = foundry.utils.duplicate(BetterDocumentLink._defaultContextMenu());
         module._instance = this;
     }
 
@@ -110,12 +110,12 @@ export class BetterDocumentLink {
             name: options.name,
             icon: `<i class="fas ${options.icon}"></i>`,
             condition: li => {
-                const documentUuid = li.data("uuid");                
+                const documentUuid = li.dataset.uuid;
                 const document = fromUuidSync(documentUuid);                
                 return options.condition instanceof Function && options.condition(documentUuid, document);
             },
             callback: async li => {
-                const documentUuid = li.data("uuid");                
+                const documentUuid = li.dataset.uuid;
                 const document = await fromUuid(documentUuid);
                 return await options.callback(document);
             }
@@ -124,29 +124,38 @@ export class BetterDocumentLink {
     }
 
     enhanceDocumentLink(app, link) {
-        const documentType = this._resolveDocumentType($(link));
+        const documentType = this._resolveDocumentType(link);
         const contextOptions = this.contextMenus[documentType];
         if (!contextOptions?.length) return undefined;
-        foundry.applications.ux.ContextMenu.implementation.create(app, $(link), "a.content-link", contextOptions, BetterDocumentLink._contextMenuName);
+        new foundry.applications.ux.ContextMenu.implementation(link, "a.content-link", contextOptions, 
+        { jQuery: false }
+        //BetterDocumentLink._contextMenuName
+        );
     }
 
     enhanceDocumentLinks(app, html) {
         if (!html === null || !html) return undefined;
 
-        const links = html.find("a.content-link:not([data-contextmenu])");
+        let links;
+        if (html instanceof jQuery) {
+            links = html.find("a.content-link:not([data-contextmenu])");
+        }
+        else
+            links = html.querySelectorAll("a.content-link:not([data-contextmenu])");
+
         if (links === null || links === undefined || (Array.isArray(links) && !links.length)) return undefined;
 
         setTimeout(() => {
             for (let link of links) {
-                this.enhanceDocumentLink(app, $(link));
+                this.enhanceDocumentLink(app, link);
             }
         }, 100);
     }
 
     _resolveDocumentType(documentLink) {
-        if (documentLink[0].hasAttribute("data-type")) return documentLink.data("type");
-        if (documentLink[0].hasAttribute("data-pack")) {
-            const packId = documentLink.data("pack");
+        if (documentLink.dataset.type) return documentLink.dataset.type;
+        if (documentLink.dataset.pack) {
+            const packId = documentLink.dataset.pack;
             return game.packs.get(packId).documentName;
         }
         // TODO: add resolving from <i> font-awesome icon class ?
