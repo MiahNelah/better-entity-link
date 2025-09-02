@@ -127,7 +127,7 @@ export class BetterDocumentLink {
         const documentType = this._resolveDocumentType($(link));
         const contextOptions = this.contextMenus[documentType];
         if (!contextOptions?.length) return undefined;
-        ContextMenu.create(app, $(link), "a.content-link", contextOptions, BetterDocumentLink._contextMenuName);
+        foundry.applications.ux.ContextMenu.implementation.create(app, $(link), "a.content-link", contextOptions, BetterDocumentLink._contextMenuName);
     }
 
     enhanceDocumentLinks(app, html) {

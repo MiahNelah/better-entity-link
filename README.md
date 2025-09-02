@@ -35,7 +35,7 @@ Hooks.on("ready", () => {
 
     // Register an action for Scene document link
     game.modules.get("better-entity-link").registerSceneAction({
-        name: "SCENES.View",
+        name: "SCENE.View",
         icon: "fa-eye fa-fw",
         condition: (uuid, data)   => game.user.isGM,
         callback:  async document => await entity.view()

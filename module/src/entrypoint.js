@@ -97,10 +97,10 @@ function registerActorActions() {
 
     // Actor - "Token Configuration" button
     BetterDocumentLink.registerActorAction({
-        name: "TOKEN.Title",
+        name: "TOKEN.TitlePrototype",
         icon: "fa-user-circle",
         condition: (uuid, data) => data?.prototypeToken && (game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER])),
-        callback: async document => new CONFIG.Token.prototypeSheetClass(document.prototypeToken).render(true)
+        callback: async document => new CONFIG.Token.prototypeSheetClass({prototype: document.prototypeToken}).render({force: true})
     });
 
     // Actor - "View Character Artwork" button
@@ -157,7 +157,7 @@ function registerItemActions() {
 function registerSceneActions() {
     // Scene - "View" button
     BetterDocumentLink.registerSceneAction({
-        name: "SCENES.View",
+        name: "SCENE.View",
         icon: "fa-eye",
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.isView,
         callback: async document => await document.view()
@@ -165,7 +165,7 @@ function registerSceneActions() {
 
     // Scene - "Activate" button
     BetterDocumentLink.registerSceneAction({
-        name: "SCENES.Activate",
+        name: "SCENE.Activate",
         icon: "fa-bullseye",
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.active,
         callback: async document => await document.activate()
@@ -173,7 +173,7 @@ function registerSceneActions() {
 
     // Scene - "Preload" button
     BetterDocumentLink.registerSceneAction({
-        name: "SCENES.Preload",
+        name: "SCENE.Preload",
         icon: "fa-download",
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted),
         callback: async document => await game.scenes.preload(document.id)
