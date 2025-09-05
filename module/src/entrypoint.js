@@ -1,10 +1,11 @@
 import {BetterDocumentLink} from "./BetterDocumentLink.js";
 
 function renderImagePopup(image, title, uuid, shareable) {
-    const imagePoput = new ImagePopout(image, {
-        title: title,
+    const imagePoput = new foundry.applications.apps.ImagePopout({
+        src: image,
+        window: {title},
         shareable: shareable,
-        uuid: uuid
+        uuid
     });
     imagePoput.render(true);
 }
@@ -47,7 +48,7 @@ function registerActorActions() {
     BetterDocumentLink.registerActorAction({
         name: "CONTROLS.CanvasSelect",
         icon: "fa-hand-pointer",
-        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor?.uuid.endsWith(uuid)),
         callback: async document => {
             if (!canvas.tokens.active) canvas.tokens.activate();
             canvas.tokens.releaseAll();
@@ -59,7 +60,7 @@ function registerActorActions() {
     BetterDocumentLink.registerActorAction({
         name: "CONTROLS.TargetSelect",
         icon: "fa-bullseye",
-        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor?.uuid.endsWith(uuid)),
         callback: async document => {
             if (!canvas.tokens.active) canvas.tokens.activate();
             document.getActiveTokens()
@@ -72,7 +73,7 @@ function registerActorActions() {
     BetterDocumentLink.registerActorAction({
         name: "CONTROLS.CanvasPing",
         icon: "fa-map-pin",
-        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor?.uuid.endsWith(uuid)),
         callback: async document => Promise.all(document.getActiveTokens().map(async x => canvas.ping(x.center)))
     });
 
@@ -80,7 +81,7 @@ function registerActorActions() {
     BetterDocumentLink.registerActorAction({
         name: "CONTROLS.CanvasPingAlert",
         icon: "fa-map-pin",
-        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor?.uuid.endsWith(uuid)),
         callback: async document => Promise.all(document.getActiveTokens().map(async x => canvas.ping(x.center, {style: CONFIG.Canvas.pings.types.ALERT})))
     });
 
@@ -88,7 +89,7 @@ function registerActorActions() {
     BetterDocumentLink.registerActorAction({
         name: "CONTROLS.CanvasPingPull",
         icon: "fa-map-pin",
-        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor.uuid.endsWith(uuid)),
+        condition: (uuid) => canvas.ready && canvas.tokens.placeables.some(x => x.actor?.uuid.endsWith(uuid)),
         callback: async document => Promise.all(document.getActiveTokens().map(async x => canvas.ping(x.center, {
             style: CONFIG.Canvas.pings.types.PULL,
             pull: true
@@ -97,10 +98,10 @@ function registerActorActions() {
 
     // Actor - "Token Configuration" button
     BetterDocumentLink.registerActorAction({
-        name: "TOKEN.Title",
+        name: "TOKEN.TitlePrototype",
         icon: "fa-user-circle",
         condition: (uuid, data) => data?.prototypeToken && (game.user.isGM || game.user.isTrusted || permissionHelper(data, [CONST.DOCUMENT_OWNERSHIP_LEVELS.OBSERVER, CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER])),
-        callback: async document => new CONFIG.Token.prototypeSheetClass(document.prototypeToken).render(true)
+        callback: async document => new CONFIG.Token.prototypeSheetClass({prototype: document.prototypeToken}).render({force: true})
     });
 
     // Actor - "View Character Artwork" button
@@ -124,7 +125,7 @@ function registerActorActions() {
         name: "OWNERSHIP.Configure",
         icon: "fa-lock fa-fw",
         condition: () => game.user.isGM || game.user.isTrusted,
-        callback: async document => new DocumentOwnershipConfig(document).render(true)
+        callback: async document => new foundry.applications.apps.DocumentOwnershipConfig(document).render(true)
     });
 }
 
@@ -150,14 +151,14 @@ function registerItemActions() {
         name: "OWNERSHIP.Configure",
         icon: "fa-lock fa-fw",
         condition: () => game.user.isGM || game.user.isTrusted,
-        callback: async document => new DocumentOwnershipConfig(document).render(true)
+        callback: async document => new foundry.applications.apps.DocumentOwnershipConfig(document).render(true)
     });
 }
 
 function registerSceneActions() {
     // Scene - "View" button
     BetterDocumentLink.registerSceneAction({
-        name: "SCENES.View",
+        name: "SCENE.View",
         icon: "fa-eye",
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.isView,
         callback: async document => await document.view()
@@ -165,7 +166,7 @@ function registerSceneActions() {
 
     // Scene - "Activate" button
     BetterDocumentLink.registerSceneAction({
-        name: "SCENES.Activate",
+        name: "SCENE.Activate",
         icon: "fa-bullseye",
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted) && !data.active,
         callback: async document => await document.activate()
@@ -173,7 +174,7 @@ function registerSceneActions() {
 
     // Scene - "Preload" button
     BetterDocumentLink.registerSceneAction({
-        name: "SCENES.Preload",
+        name: "SCENE.Preload",
         icon: "fa-download",
         condition: (uuid, data) => (game.user.isGM || game.user.isTrusted),
         callback: async document => await game.scenes.preload(document.id)
@@ -229,7 +230,7 @@ function registerJournalEntryActions() {
         name: "OWNERSHIP.Configure",
         icon: "fa-lock fa-fw",
         condition: () => game.user.isGM || game.user.isTrusted,
-        callback: async document => new DocumentOwnershipConfig(document).render(true)
+        callback: async document => new foundry.applications.apps.DocumentOwnershipConfig(document).render(true)
     });
 }
 
@@ -282,7 +283,7 @@ function registerJournalEntryPageActions() {
         name: "OWNERSHIP.Configure",
         icon: "fa-lock fa-fw",
         condition: () => game.user.isGM || game.user.isTrusted,
-        callback: async document => new DocumentOwnershipConfig(document).render(true)
+        callback: async document => new foundry.applications.apps.DocumentOwnershipConfig(document).render(true)
     });
 }
 
@@ -310,7 +311,7 @@ function registerRollTableActions() {
         name: "OWNERSHIP.Configure",
         icon: "fa-lock fa-fw",
         condition: () => game.user.isGM || game.user.isTrusted,
-        callback: async document => new DocumentOwnershipConfig(document).render(true)
+        callback: async document => new foundry.applications.apps.DocumentOwnershipConfig(document).render(true)
     });
 }
 
@@ -360,7 +361,7 @@ function registerCardsActions() {
         name: "OWNERSHIP.Configure",
         icon: "fa-lock fa-fw",
         condition: () => game.user.isGM || game.user.isTrusted,
-        callback: async document => new DocumentOwnershipConfig(document).render(true)
+        callback: async document => new foundry.applications.apps.DocumentOwnershipConfig(document).render(true)
     });
 }
 
@@ -418,10 +419,17 @@ Hooks.on('ready', () => {
     registerPlaylistActions();
     registerPlaylistSoundActions();
 
+    // AppV1
     Hooks.on('renderJournalSheet', BetterDocumentLink.enhanceDocumentLinks);
     Hooks.on('renderActorSheet', BetterDocumentLink.enhanceDocumentLinks);
     Hooks.on('renderJournalPageSheet', BetterDocumentLink.enhanceDocumentLinks);
     Hooks.on('renderItemSheet', BetterDocumentLink.enhanceDocumentLinks);
+    // AppV2
+    Hooks.on('renderJournalEntrySheet', BetterDocumentLink.enhanceDocumentLinks);
+    Hooks.on('renderItemSheetV2', BetterDocumentLink.enhanceDocumentLinks);
+    Hooks.on('renderActorSheetV2', BetterDocumentLink.enhanceDocumentLinks);
+    Hooks.on('renderJournalEntryPageSheet', BetterDocumentLink.enhanceDocumentLinks);
+    
     //Hooks.on('renderChatMessage', BetterEntityLink.enhanceEntityLinks);
 })
 

@@ -4,8 +4,8 @@
   "description": "Improve your productivity with contextmenus on document links!",
   "version": "0.0.1",  
   "compatibility": {
-    "minimum": "11",
-    "verified": "11.308"
+    "minimum": 13,
+    "verified": 13
   },
   "authors": [
     {
@@ -20,6 +20,6 @@
     "module/styles/better-document-link.css"
   ],
   "url": "https://github.com/Daimakaicho/better-entity-link",
-  "manifest": "https://github.com/Daimakaicho/better-entity-link/releases/download/v0.0.1/module.json",
+  "manifest": "https://github.com/Daimakaicho/better-entity-link/releases/latest/download/module.json",
   "download": "https://github.com/Daimakaicho/better-entity-link/releases/download/v0.0.1/module.zip"
 }
